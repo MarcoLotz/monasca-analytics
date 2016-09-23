@@ -55,6 +55,18 @@ if [ "$VAGRANT_ENV" ]; then
   cp ~/spark/spark-1.6.1/conf/log4j.properties.template ~/spark/spark-1.6.1/conf/log4j.properties
   sed -i 's/log4j.rootCategory=INFO/log4j.rootCategory=ERROR/g' ~/spark/spark-1.6.1/conf/log4j.properties
 
+  # Flink
+  cd ~/tmp
+  curl http://apache.claz.org/flink/flink-1.0.3/flink-1.0.3-src.tgz > flink.tgz
+  echo "-------------------------"
+  echo "unzip flink to ~/flink"
+  tar -xzf flink.tgz
+  mkdir -p ~/flink/
+  mv flink-1.0.3 ~/flink/flink-1.0.3
+  cd ~/flink/flink-1.0.3
+  mvn -DskipTests clean package
+  cd ~/tmp
+
   # Kafka
   mkdir ~/kafka
   curl http://apache.arvixe.com/kafka/0.9.0.0/kafka_2.11-0.9.0.0.tgz > kafka.tgz
@@ -90,3 +102,4 @@ if [ "$VAGRANT_ENV" ]; then
 else
   echo "This file is intended to be used by a vagrant vm only."
 fi
+

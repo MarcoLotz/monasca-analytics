@@ -22,7 +22,7 @@ using the optional argument --sources. However, a default source using random
 data generator is provided in the config folder.
 
 Usage:
-    run.py -p <spark_path> -c <config> -l <log_config> [-s <sources>...
+    run.py -f <framework_name> -c <config> -l <log_config> [-s <sources>...
         [<sources>]] [-dvh]
     run.py -v | --version
     run.py -h | --help
@@ -32,7 +32,7 @@ Options:
     -d --debug           Show debug messages.
     -h --help            Show this screen.
     -l --log_config      Log config file's path.
-    -p --spark_path      Spark's path.
+    -f --framework       spark or flink.
     -s --sources         A list of data sources.
     -v --version         Show version.
 
@@ -57,15 +57,46 @@ class RunnerError(Exception):
     def __str__(self):
         return repr(self._value)
 
+    @staticmethod
+    def enviromentNotDefined(environmentVariableName):
+        return RunnerError(r"$" + environmentVariableName + " environment variable not defined.")
 
-def main(arguments):
-    spark_submit = "{0}/bin/spark-submit".format(arguments["<spark_path>"])
+def processing_framework_selection(arguments):
+    """Selects between supported processing frameworks"""
+
     monanas_path = os.environ.get('MONANAS_HOME', "")
-    kafka_jar = None
+
+    if (monanas_path is None):
+        raise RunnerError.enviromentNotDefined("MONANAS_HOME")
+
+    framework = "{0}".format(arguments["<framework_name>"])
+
+    if framework == "spark":
+        spark_path = os.environ.get("SPARK_HOME")
+
+        if (spark_path is not None):
+            command = generate_command_for_spark(monanas_path, spark_path, arguments)
+        else:
+            raise RunnerError.enviromentNotDefined("SPARK_HOME")
+
+    elif framework == "flink":
+        flink_path = os.environ.get("FLINK_HOME")
+        if (flink_path is not None):
+            submit_binary_path = flink_path
+            # TODO (MARCO) generate command for flink
+        else:
+            raise RunnerError.enviromentNotDefined("FLINK_HOME")
+    else:
+        raise RunnerError("{0} framework is not supported.".format(arguments("<framework_name>")))
+
+    return command
+
+def generate_command_for_spark(monanas_path, spark_path, arguments):
+    """Generates the command line call for a Spark application"""
+    submit_binary_path = spark_path + r"/bin/spark-submit"
 
     try:
-        for filename in os.listdir("{0}/external/kafka-assembly/target".
-                                   format(arguments["<spark_path>"])):
+        for filename in os.listdir(spark_path + r"/external/kafka-assembly/target"):
             if filename.startswith("spark-streaming-kafka-assembly") and\
                not any(s in filename for s in ["source", "test"]):
                 kafka_jar = filename
@@ -73,17 +104,25 @@ def main(arguments):
 
         if not kafka_jar:
             raise OSError("Spark's external library required does not exist.")
+
     except OSError as e:
         raise RunnerError(e.__str__())
 
-    spark_kafka_jar = "{0}/external/kafka-assembly/target/{1}".\
-                      format(arguments["<spark_path>"], kafka_jar)
+    spark_kafka_jar = spark_path + "/external/kafka-assembly/target/" + kafka_jar
+
     command = [
-        spark_submit, "--master", "local[2]",
+        submit_binary_path, "--master", "local[2]",
         "--jars", spark_kafka_jar, monanas_path + "/monasca_analytics/monanas.py",
         arguments["<config>"], arguments["<log_config>"]
     ]
     command += arguments["<sources>"]
+
+    return command
+
+
+def main(arguments):
+
+    command = processing_framework_selection(arguments)
 
     try:
         logger.info("Executing `{}`...".format(" ".join(command)))
@@ -100,6 +139,7 @@ def setup_logging(filename):
     log_conf.dictConfig(config)
 
 if __name__ == "__main__":
+
     arguments = docopt.docopt(__doc__, version=setup_property.VERSION)
 
     try:
@@ -122,3 +162,5 @@ if __name__ == "__main__":
     except Exception as e:
         logger.error("Unexpected error: {0}. {1}.".
                      format(sys.exc_info()[0], e))
+
+
