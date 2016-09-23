@@ -28,7 +28,7 @@ FEEDBACK = "feedback"
 components_types = [SOURCES, INGESTORS, SMLS, VOTERS, SINKS, LDPS]
 
 
-_default_base_config = {
+_default_spark_base_config = {
     "spark_config": {
         "appName": "testApp",
         "streaming": {
@@ -49,6 +49,8 @@ _default_base_config = {
     "feedback": {}
 }
 
+# TODO(Marco) Generate a apache beam base config
+
 
 def get_default_base_config():
-    return copy.deepcopy(_default_base_config)
+    return copy.deepcopy(_default_spark_base_config)

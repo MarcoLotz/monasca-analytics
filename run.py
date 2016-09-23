@@ -49,7 +49,6 @@ import docopt
 
 import setup_property
 
-
 class RunnerError(Exception):
     def __init__(self, value):
         self._value = value

@@ -15,6 +15,7 @@
 # under the License.
 
 import abc
+import apache_beam as beam
 import six
 
 
@@ -32,10 +33,10 @@ class abstractstatic(staticmethod):
 
 
 @six.add_metaclass(abc.ABCMeta)
-class BaseComponent(object):
+class BaseComponent(beam.PTransform):
     """Base class for all component types.
 
-    Should be as lightweight as possible, becuase any data here will be sent
+    Should be as lightweight as possible, because any data here will be sent
     to all workers every time a component is added.
     """
 
@@ -47,8 +48,12 @@ class BaseComponent(object):
         :type _config: dict
         :param _config: configuration of this Source
         """
+        super(BaseComponent, self).__init__()
         self.validate_config(_config)
         self._id = _id
+
+    def apply(self, pcoll):
+        pass
 
     @abstractstatic
     def validate_config(_config):  # @NoSelf

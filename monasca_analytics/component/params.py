@@ -14,7 +14,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import monasca_analytics.banana.typeck.type_util as u
+import monasca_analytics.banana.typeck.type_util as util
 
 
 class ParamDescriptor(object):
@@ -24,6 +24,7 @@ class ParamDescriptor(object):
     the default value and a validator that will be evaluated
     when the component is instantiated.
     """
+
     def __init__(self, name, _type, default=None, validator=None):
         """
         Construct a parameter descriptor.
@@ -35,12 +36,19 @@ class ParamDescriptor(object):
         :param default: The default value for the parameter.
         :param validator: Additional validator for the parameter.
         """
-        if not isinstance(_type, u.String) and\
-           not isinstance(_type, u.Number) and\
-           not isinstance(_type, u.Object) and\
-           not isinstance(_type, u.Enum) and\
-           not isinstance(_type, u.Any):
-            raise Exception("ParamDescriptor incorrectly defined")
+        if (not isinstance(_type, util.String) and
+                not isinstance(_type, util.Number) and
+                not isinstance(_type, util.Object) and
+                not isinstance(_type, util.Enum) and
+                not isinstance(_type, util.Any)) \
+                or \
+                (default is not None and
+                 not isinstance(default, str) and
+                 not isinstance(default, float) and
+                 not isinstance(default, int) and
+                 not isinstance(default, dict)):
+            raise Exception("ParamDescriptor type incorrectly defined")
+
         self.param_name = name
         self.default_value = default
         self.param_type = _type

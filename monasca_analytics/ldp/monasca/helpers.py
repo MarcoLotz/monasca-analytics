@@ -21,7 +21,7 @@ import time
 def interpolate(timestamp, metric_values, metric_timestamps):
     """
     :type timestamp: int
-    :param timestamp: Timestamp at witch we want to interpolate or extrapolate
+    :param timestamp: Timestamp at which we want to interpolate or extrapolate
                       the metric value
     :type metric_values: list[dict]
     :param metric_values: List of metrics

@@ -19,7 +19,6 @@ import logging
 import os.path as os_path
 import pyspark.sql as sql
 import pyspark.streaming as streaming
-import apache_beam as beam
 
 logger = logging.getLogger(__name__)
 

@@ -18,13 +18,13 @@ import logging
 
 import apache_beam as beam
 
+import monasca_analytics.beam.aggregator as agg
+import monasca_analytics.beam.streaming_context as streamingctx
 import monasca_analytics.config.config as config
 import monasca_analytics.ingestor.base as bi
 import monasca_analytics.ldp.base as mldp
 import monasca_analytics.sink.base as msink
 import monasca_analytics.sml.base as bml
-import monasca_analytics.beam.baggregator as agg
-import monasca_analytics.beam.bstreaming_context as streamingctx
 import monasca_analytics.voter.base as mvoter
 
 logger = logging.getLogger(__name__)
@@ -44,28 +44,31 @@ class BeamDriverExecutor(object):
         self._orchestrator = None
         self.set_links(config.instantiate_components(_config))
 
-        #self._sc = beam.Pipeline(
+        # self._sc = beam.Pipeline(
         #    _config["beam_config"]["appName"])
-        self._beam_context = beam.Pipeline('DirectPipelineRunner', argv=['--project', "Meu projeto"])
+        self._beam_context = beam.Pipeline(
+            'DirectPipelineRunner', argv=[
+                '--project', "Meu projeto"])
 
         self.restart_beam(_config)
 
-        # TODO (Marco) -- believe this line is redundant:
-        self._beam_streaming_context = streamingctx.create_streaming_context(self._beam_context, _config)
+        # TODO(Marco) -- believe this line is redundant:
+        self._beam_streaming_context = streamingctx.create_streaming_context(
+            self._beam_context, _config)
 
-    def restart_beam(self, _config = None):
+    def restart_beam(self, _config=None):
         """Restarts the pipeline"""
 
         self._beam_context.stop()
 
-        #TODO (Marco) update context if required
+        # TODO(Marco) update context if required
 
         self.start_pipeline()
 
-        #if (_config is not None):
+        # if (_config is not None):
         #    self._config = config
 
-        #self._beam_streaming_context = streamingctx.create_streaming_context(
+        # self._beam_streaming_context = streamingctx.create_streaming_context(
         #    self._beam_context,
         #    self._config)
 
@@ -116,7 +119,7 @@ class BeamDriverExecutor(object):
         logger.debug("Restart beam context.")
         self.restart_beam()
 
-    # TODO (MARCO) is this ever used at all?
+    # TODO(MARCO) is this ever used at all?
     def move_to_phase2(self):
         if self._beam_streaming_context is not None:
             logger.debug("Phase 2: Stop beamStreamingContext.")
@@ -284,6 +287,6 @@ class BeamDriverExecutor(object):
                     connected_node.set_feature_list(features)
                     propagated = True
                 if propagated:
-                    # TODO (MARCO) shouldn't here be 1, 2, and 3?
+                    # TODO(MARCO) shouldn't here be 1, 2, and 3?
                     logger.info("Feature list {} propagated from {} to {}"
                                 .format(features, source, connected_node))

@@ -23,8 +23,8 @@ import voluptuous
 
 import monasca_analytics.banana.emitter as emit
 import monasca_analytics.banana.pass_manager as executor
+import monasca_analytics.beam.driver as driver
 import monasca_analytics.exception.monanas as err
-import monasca_analytics.spark.driver as driver
 import monasca_analytics.util.common_util as cu
 import monasca_analytics.web_service.web_service as ws
 
