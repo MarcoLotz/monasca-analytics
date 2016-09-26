@@ -134,7 +134,9 @@ class CommonUtilTest(unittest.TestCase):
         children = common_util.get_available_inherited_classes_recursively(
             util, inh.Baseclass)
         classes = [source_class.__name__ for source_class in children]
-        self.assertItemsEqual(classes,
+        classes.sort()
+        self.assertEqual(len(classes), 10)
+        self.assertListEqual(classes,
                               ["Extended_1_1",
                                "Extended_1_2",
                                "Extended_1_3",
