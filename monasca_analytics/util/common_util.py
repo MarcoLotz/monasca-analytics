@@ -23,6 +23,7 @@ import logging
 from logging import config as log_conf
 import os
 import pkgutil
+import sys
 
 from monasca_analytics.config import const
 from monasca_analytics.exception import monanas as err
@@ -72,10 +73,12 @@ def setup_logging(filename):
     except (IOError, ValueError):
         raise
 
+# TODO(MARCO) add deprecated notation
+
 
 def get_available_inherited_classes(pkg, base_class):
     """Gets all inherited classes in modules for a given package
-
+     ------>>>>> DEPRECATED
     This does not include subpackages.
 
     :type pkg: str
@@ -106,6 +109,48 @@ def get_available_inherited_classes(pkg, base_class):
     return set(available_classes)
 
 
+def get_available_inherited_classes_recursively(pkg, base_class):
+    """Import all submodules of a module recursively, if they inherit from
+    base class
+
+    :type pkg: str
+    :param pkg: a package name.
+    :type base_class: object
+    :param base_class: a base class.
+    :rtype: list
+    :returns: a list of inherited classes.
+    """
+
+    class_dict = recursively_find_packages_from_root(pkg)
+    available_classes = []
+
+    for module, clazzes in class_dict.iteritems():
+        for clazz in inspect.getmembers(clazzes, inspect.isclass):
+            if clazz is not base_class:
+                if issubclass(clazz[1], base_class) and \
+                        not inspect.isabstract(clazz[1]) and \
+                        clazz[1] != base_class:
+                    available_classes.append(clazz[1])
+
+    return set(available_classes)
+
+
+def recursively_find_packages_from_root(pkg):
+    """Import all submodules of a module, recursively
+
+        :type pkg: str
+        :param pkg: a package name.
+        :rtype: dict[types.ModuleType]
+        """
+
+    package = sys.modules[pkg.__name__]
+
+    return {
+        name: importlib.import_module(pkg.__name__ + '.' + name)
+        for loader, name, is_pkg in pkgutil.walk_packages(package.__path__)
+    }
+
+
 def get_available_classes(class_type=None):
     """Creates a dictionary containing pipeline available classes of each type
 
@@ -119,29 +164,35 @@ def get_available_classes(class_type=None):
 
     if not class_type or class_type == const.SOURCES:
         from monasca_analytics.source.base import BaseSource
-        _classes[const.SOURCES] = get_available_inherited_classes(source,
-                                                                  BaseSource)
+        _classes[
+            const.SOURCES] = get_available_inherited_classes_recursively(
+            source, BaseSource)
     if not class_type or class_type == const.INGESTORS:
         from monasca_analytics.ingestor.base import BaseIngestor
         _classes[const.INGESTORS] = \
-            get_available_inherited_classes(ingestor, BaseIngestor)
+            get_available_inherited_classes_recursively(ingestor, BaseIngestor)
 
     if not class_type or class_type == const.SMLS:
         from monasca_analytics.sml.base import BaseSML
-        _classes[const.SMLS] = get_available_inherited_classes(sml, BaseSML)
+        _classes[
+            const.SMLS] = get_available_inherited_classes_recursively(
+            sml, BaseSML)
 
     if not class_type or class_type == const.VOTERS:
         from monasca_analytics.voter.base import BaseVoter
-        _classes[const.VOTERS] = get_available_inherited_classes(voter,
-                                                                 BaseVoter)
+        _classes[
+            const.VOTERS] = get_available_inherited_classes_recursively(
+            voter, BaseVoter)
     if not class_type or class_type == const.SINKS:
         from monasca_analytics.sink.base import BaseSink
-        _classes[const.SINKS] = get_available_inherited_classes(sink, BaseSink)
+        _classes[
+            const.SINKS] = get_available_inherited_classes_recursively(
+            sink, BaseSink)
 
     if not class_type or class_type == const.LDPS:
         from monasca_analytics.ldp.base import BaseLDP
         _classes[const.LDPS] = \
-            get_available_inherited_classes(ldp, BaseLDP)
+            get_available_inherited_classes_recursively(ldp, BaseLDP)
 
     return _classes
 

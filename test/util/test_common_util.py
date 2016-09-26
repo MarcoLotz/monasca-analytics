@@ -68,6 +68,7 @@ class CommonUtilTest(unittest.TestCase):
 
     def test_get_class_by_name(self):
         common_util.get_class_by_name("RandomSource", const.SOURCES)
+        # TODO(MARCO) missing assert?
 
     def test_get_class_by_name_no_such_class(self):
         self.assertRaises(err.MonanasNoSuchClassError,
@@ -128,3 +129,19 @@ class CommonUtilTest(unittest.TestCase):
             'MonascaDerivativeLDP', 'MonascaAggregateLDP',
             'MonascaCombineLDP'
         ], names)
+
+    def test_get_available_inherited_classes_recursively(self):
+        children = common_util.get_available_inherited_classes_recursively(
+            util, inh.Baseclass)
+        classes = [source_class.__name__ for source_class in children]
+        self.assertItemsEqual(classes,
+                              ["Extended_1_1",
+                               "Extended_1_2",
+                               "Extended_1_3",
+                               "Extended_2_1",
+                               "Extended_3_1",
+                               "SubPackageExtended_1_1",
+                               "SubPackageExtended_1_2",
+                               "SubPackageExtended_1_3",
+                               "SubPackageExtended_2_1",
+                               "SubPackageExtended_3_1"])
