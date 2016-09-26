@@ -132,8 +132,6 @@ def get_available_inherited_classes_recursively(pkg, base_class):
                         clazz[1] != base_class:
                     available_classes.append(clazz[1])
 
-    print class_dict
-
     return set(available_classes)
 
 

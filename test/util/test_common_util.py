@@ -133,17 +133,16 @@ class CommonUtilTest(unittest.TestCase):
     def test_get_available_inherited_classes_recursively(self):
         children = common_util.get_available_inherited_classes_recursively(
             util, inh.Baseclass)
-        classes = [source_class.__name__ for source_class in children]
-        classes.sort()
+        classes = sorted([source_class.__name__ for source_class in children])
         self.assertEqual(len(classes), 10)
         self.assertListEqual(classes,
-                              ["Extended_1_1",
-                               "Extended_1_2",
-                               "Extended_1_3",
-                               "Extended_2_1",
-                               "Extended_3_1",
-                               "SubPackageExtended_1_1",
-                               "SubPackageExtended_1_2",
-                               "SubPackageExtended_1_3",
-                               "SubPackageExtended_2_1",
-                               "SubPackageExtended_3_1"])
+                             ["Extended_1_1",
+                              "Extended_1_2",
+                              "Extended_1_3",
+                              "Extended_2_1",
+                              "Extended_3_1",
+                              "SubPackageExtended_1_1",
+                              "SubPackageExtended_1_2",
+                              "SubPackageExtended_1_3",
+                              "SubPackageExtended_2_1",
+                              "SubPackageExtended_3_1"])
