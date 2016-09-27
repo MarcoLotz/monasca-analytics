@@ -23,6 +23,7 @@ import monasca_analytics.ldp.base as bt
 from monasca_analytics.sml import svm_one_class
 import monasca_analytics.util.spark_func as fn
 from monasca_analytics.util import validation_utils as vu
+import apache_beam as beam
 
 logger = logging.getLogger(__name__)
 
@@ -60,6 +61,20 @@ class IptablesLDP(bt.BaseLDP):
             .groupByKey()\
             .flatMap(lambda r: IptablesLDP._detect_anomalies(r[1], data))
 
+    def apply(self, pcollection):
+        """Detect anomalies in a pCollection using the learned classifier
+
+                :type pcollection: apache_beam.pvalue.pcollection
+                :param pcollection: Apache beam parallel collection
+                """
+        data = self._data
+        return (pcollection
+                | 'Load from json' >> beam.ParDo(fn.from_json)\
+                | 'TODO(Marco) define' >> beam.ParDo(lambda x: (x['ctime'], x))\
+                | 'Group by key' >> beam.GroupByKey\
+                | 'TODO(Marco) define' >> beam.FlatMap(lambda r: IptablesLDP._detect_anomalies(r[1], data)))
+
+    # TODO(Marco) remove rdd reference?
     @staticmethod
     def _detect_anomalies(rdd_entry, data):
         """Classifies and marks the RDD entry as anomalous or non-anomalous

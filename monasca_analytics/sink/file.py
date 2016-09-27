@@ -20,6 +20,8 @@ import tempfile
 import time
 import voluptuous
 
+import apache_beam as beam
+
 import monasca_analytics.banana.typeck.type_util as type_util
 import monasca_analytics.component.params as params
 import monasca_analytics.sink.base as base
@@ -57,6 +59,21 @@ class FileSink(base.BaseSink):
                 _file.write(json.dumps(rdd_entry, indent=4))
 
         dstream.foreachRDD(lambda _, rdd: write_output(rdd))
+
+
+
+    def sink_pcollection(self, pcollection):
+        """
+        Sink the provided pcolletion into a file.
+
+        :type pcollection: apache_beam.pvalue.pcollection
+        :param pcollection: pcollection to sink
+        """
+        _file_name = self._file_path
+
+        #TODO(Marco): Add identation
+        return (pcollection
+                | 'Persist fo file ' + _file_name >> beam.io.TextFileSink(_file_name))
 
     def sink_ml(self, voter_id, matrix):
         pass

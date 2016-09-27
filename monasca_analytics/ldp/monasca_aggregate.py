@@ -17,6 +17,7 @@
 import logging
 import voluptuous
 
+import apache_beam as beam
 import monasca_analytics.banana.typeck.type_util as type_util
 import monasca_analytics.component.params as params
 
@@ -95,6 +96,24 @@ class MonascaAggregateLDP(bt.BaseLDP):
                 suf
             ))\
             .map(lambda metric_and_name: metric_and_name[1])
+
+    def apply(self, pcollection):
+        """
+            Map the given pcollection into a new pcollection where metrics
+            have been aggregated by name.
+
+            :type pcollection: apache_beam.pvalue.pcollection
+            :param pcollection: the input collection
+            :return: Returns the collection of aggregated metrics
+            """
+        red = self._reducer_func
+        suf = self._suffix
+        agg_period = self._aggregation_period
+
+        # TODO(MARCO and Joan) define window on beam.
+        return (pcollection
+                | 'Load from json' >> beam.ParDo(fn.from_json())
+                | 'Set window' >> beam.Duration())
 
     @staticmethod
     def aggregate(all_metrics, reducer, suffix):

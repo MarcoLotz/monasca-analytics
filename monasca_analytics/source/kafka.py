@@ -74,6 +74,7 @@ class KafkaSource(base.BaseSource):
                                    type_util.Object(strict_checking=False))
         ]
 
+    #TODO(Marco) create pcollection here
     def create_dstream(self, ssc):
         """Dstream creation
 

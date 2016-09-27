@@ -73,6 +73,7 @@ class MockClass_src(base_src.BaseSource):
 
     def reset_vars(self):
         self.get_feature_list_cnt = 0
+        self.create_pcollection_cnt = 0
         self.create_dstream_cnt = 0
         self.terminate_source_cnt = 0
 
@@ -95,6 +96,10 @@ class MockClass_src(base_src.BaseSource):
     def create_dstream(self, ssc):
         self.create_dstream_cnt += 1
         return ssc.mockDStream()
+
+    def create_pcollection(self, ssc):
+        self.create_pcollection_cnt += 1
+        # TODO(MARCO) return Mock.PCollection return ssc.mockDStream()
 
     def terminate_source(self):
         self.terminate_source_cnt += 1
@@ -142,10 +147,15 @@ class MockClass_ingestor_module(base_ing.BaseIngestor):
 
     def reset_vars(self):
         self.map_dstream_cnt = 0
+        self.map_pcollection_cnt = 0
 
     def map_dstream(self, dstream):
         self.map_dstream_cnt += 1
         return dstream
+
+    def map_pcollection(self, pcollection):
+        self.map_pcollection_cnt += 1
+        return pcollection
 
 
 class MockClass_aggr_module(aggregator.Aggregator):
@@ -168,6 +178,7 @@ class MockClass_aggr_module(aggregator.Aggregator):
 
     def reset_vars(self):
         self.accumulate_dstream_samples_cnt = 0
+        self.accumulate_pcollection_samples_cnt = 0
         self.append_sml_cnt = 0
         self._smls = []
 
@@ -180,6 +191,13 @@ class MockClass_aggr_module(aggregator.Aggregator):
         self._combined_stream = None
         super(MockClass_aggr_module, self).accumulate_dstream_samples(dstream)
         self.accumulate_dstream_samples_cnt += 1
+
+    #TODO(Marco) accumulate pcollection samples
+    def accumulate_pcollection_samples(self, pcollection):
+        self._samples = np.array([])
+        self._combined_stream = None
+        super(MockClass_aggr_module, self).accumulate_pcollection_samples(pcollection)
+        self.accumulate_pcollection_samples_cnt += 1
 
 
 class MockClass_sml_module(base_sml.BaseSML):
@@ -246,6 +264,7 @@ class MockClass_sink(base_snk.BaseSink):
 
     def reset_vars(self):
         self.sink_dstream_cnt = 0
+        self.sink_pcollection_cnt = 0
         self.sink_sml_cnt = 0
 
     @staticmethod
@@ -262,6 +281,9 @@ class MockClass_sink(base_snk.BaseSink):
 
     def sink_dstream(self, _):
         self.sink_dstream_cnt += 1
+
+    def sink_pcollection(self, _):
+        self.sink_pcollection_cnt += 1
 
     def sink_ml(self, *_):
         self.sink_sml_cnt += 1
@@ -304,8 +326,14 @@ class MockClass_ldp_module1(base_ldp.BaseLDP):
         self.map_dstream_cnt += 1
         return dstream
 
+    def map_pcollection(self, pcollection):
+        self.map_pcollection_cnt += 1
+        return pcollection
+
     def reset_vars(self):
+        #TODO(Marco) remove reference to dstream
         self.map_dstream_cnt = 0
+        self.map_pcollection_cnt += 0
 
 
 def mock_kill(pid, code):

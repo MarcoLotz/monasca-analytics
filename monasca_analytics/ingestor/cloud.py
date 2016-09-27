@@ -16,6 +16,7 @@
 
 import logging
 
+import apache_beam as beam
 import numpy as np
 import voluptuous
 
@@ -51,6 +52,18 @@ class CloudIngestor(base.BaseIngestor):
             .map(lambda rdd_entry: CloudIngestor._parse_and_vectorize(
                 rdd_entry[1],
                 features_list))
+
+    def apply(self, pCollection):
+        features_list = list(self._features)
+
+        return (pCollection
+                | 'load json file' >> beam.ParDo(fn.from_json)
+                | 'comment here' >> beam.ParDo(lambda x: (x['ctime'], x['event']))
+                | 'group by key' >> beam.GroupByKey
+                | 'parse and verctorize' >> beam.ParDo(lambda entry: CloudIngestor._parse_and_vectorize(
+                        entry[1],
+                        features_list))
+                )
 
     @staticmethod
     def get_default_config():

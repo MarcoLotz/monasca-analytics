@@ -36,6 +36,7 @@ class BaseIngestor(base.BaseComponent):
         self._features = None
         super(BaseIngestor, self).__init__(_id, _config)
 
+    #TODO(Marco) deprecate this
     @abc.abstractmethod
     def map_dstream(self, dstream):
         """Transforms the data provided by a dstream to another dstream
@@ -47,6 +48,20 @@ class BaseIngestor(base.BaseComponent):
         :param dstream: stream of data before being processed
         :rtype: pyspark.streaming.DStream
         :returns: stream of data after being processed
+        """
+        pass
+
+    @abc.abstractmethod
+    def apply(self, pcoll):
+        """Transforms the data provided by a Pcollection to another Pcollection
+
+        Abstract method to be implemented by BaseIngestor children.
+        The processed Pcollection should be returned.
+
+        :type Pcollection: apache_beam.pvalue.pcollection
+        :param pcoll: collection of data before being processed
+        :rtype: Pcollection: apache_beam.pvalue.pcollection
+        :returns: collection after being processed
         """
         pass
 

@@ -16,6 +16,6 @@
 
 import json
 
-
+#TODO(Marco) define in apache beam context
 def from_json(rdd_entry):
     return json.loads(rdd_entry)

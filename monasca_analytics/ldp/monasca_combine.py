@@ -72,6 +72,10 @@ class MonascaCombineLDP(bt.BaseLDP):
             ))\
             .map(lambda x: x[1])
 
+    # TODO(Marco&Joan): define window
+    def apply(self,pcollection):
+        pass
+
     @staticmethod
     def combine(all_metrics, combine_fn, combine_metric_name, nb_of_metrics):
         """

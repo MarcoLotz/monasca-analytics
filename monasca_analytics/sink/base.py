@@ -15,6 +15,7 @@
 # under the License.
 
 import abc
+import apache_beam as beam
 import six
 
 from monasca_analytics.component import base
@@ -26,6 +27,10 @@ class BaseSink(base.BaseComponent):
 
     @abc.abstractmethod
     def sink_dstream(self, dstream):
+        pass
+
+    @abc.abstractmethod
+    def sink_pcollection(self,pcollection):
         pass
 
     @abc.abstractmethod

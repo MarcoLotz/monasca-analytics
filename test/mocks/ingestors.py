@@ -38,7 +38,10 @@ class IngestorBasicChild(base.BaseIngestor):
     def get_default_config():
         {"module": IngestorBasicChild.__name__}
 
-    def map_dstream(self):
+    #def map_dstream(self):
+    #    self.process_stream_cnt += 1
+
+    def map_dpcollection(self):
         self.process_stream_cnt += 1
 
     def before_stop_ingesting(self):

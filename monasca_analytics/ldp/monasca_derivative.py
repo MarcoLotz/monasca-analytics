@@ -90,6 +90,10 @@ class MonascaDerivativeLDP(bt.BaseLDP):
             )) \
             .map(lambda x: x[1])
 
+    # TODO(Marco&Joan): define window
+    def apply(self, pcollection):
+        pass
+
     @staticmethod
     def derivative(metric_values):
         """

@@ -41,7 +41,12 @@ class MockBaseSource(base.BaseSource):
     def get_params():
         return []
 
+    # TODO(MARCO): deprecate
     def create_dstream(self, ssc):
+        self.before_binding_cnt += 1
+        return None
+
+    def create_pcollection(self, ssc):
         self.before_binding_cnt += 1
         return None
 

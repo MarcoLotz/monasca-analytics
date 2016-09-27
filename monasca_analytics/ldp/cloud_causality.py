@@ -21,6 +21,7 @@ import voluptuous
 import monasca_analytics.ldp.base as bt
 import monasca_analytics.util.spark_func as fn
 import monasca_analytics.util.validation_utils as vu
+import apache_beam as beam
 
 
 logger = logging.getLogger(__name__)
@@ -56,6 +57,21 @@ class CloudCausalityLDP(bt.BaseLDP):
             .groupByKey()\
             .flatMap(lambda r: CloudCausalityLDP._aggregate(r[1], data))
 
+    # """Executes _aggregate for each #TODO(Marco) what here? RDD in the dstream
+    def apply(self, pCollection):
+        """Executes _aggregate for each ???? in the pCollection
+
+        :type pCollection: apache_beam.pvalue.pcollection
+        :param pCollection: pCollection created by the source.
+        """
+        data = self._data
+        return (pCollection
+                | 'load from json' >> beam.ParDo(fn.from_json)\
+                | 'TODO(MARCO) define' >> beam.ParDo(lambda x: (x['ctime'], x))\
+                | 'Group by key' | beam.GroupByKey\
+                | 'TODO(MARCO) define' >> beam.FlatMap(lambda r: CloudCausalityLDP._aggregate(r[1], data)))
+
+    #TODO(Marco) remove rdd reference
     @staticmethod
     def _aggregate(rdd_entry, data):
         new_entries = []

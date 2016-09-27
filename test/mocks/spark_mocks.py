@@ -17,6 +17,7 @@
 import time
 
 
+#TODO(Marco) generate apache beam mock
 class MockSparkContext(object):
 
     def __init__(self, appName):

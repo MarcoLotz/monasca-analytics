@@ -48,6 +48,16 @@ class BaseLDP(base.BaseComponent):
         """
         pass
 
+    @abc.abstractmethod
+    def apply(self, pcollection):
+        """Map the pcollection input to new values
+
+        :type pcollection: apache_beam.pvalue.pcollection
+        :param pcollection: pcollection created by the source.
+        """
+
+        pass
+
     def set_voter_output(self, matrix):
         """Assign the features and matrix to the _data object that
 

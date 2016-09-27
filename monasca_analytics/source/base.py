@@ -55,6 +55,18 @@ class BaseSource(base.BaseComponent):
         pass
 
     @abc.abstractmethod
+    #TODO(Marco): Define best ingestion method
+    def create_pcollection(self, pcollection):
+        """Create a pcollection to be consumed by Monanas.
+
+                :type ssc: pyspark.streaming.StreamingContext
+                :param ssc: Spark streaming context. It shouldn't be stored by self.
+                :rtype: pyspark.streaming.DStream
+                :returns: a Spark dstream to be consumed by Monanas.
+                """
+        pass
+
+    @abc.abstractmethod
     def terminate_source(self):
         """Terminate the source.
 

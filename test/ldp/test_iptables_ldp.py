@@ -23,7 +23,7 @@ class TestIptablesLDP(MonanasTestCase):
 
     def setUp(self):
         super(TestIptablesLDP, self).setUp()
-        self.rdd_entry = [{
+        self.pvalue_entry = [{
             "ctime": "Mon Apr 11 19:59:12 2016",
             "event": {
                 "msg": "OUTPUT -p icmp --icmp-type echo-request -j ACCEPT",
@@ -36,7 +36,7 @@ class TestIptablesLDP(MonanasTestCase):
                 "id": "1"
             }
         }]
-        self.raw_events = map(lambda x: x["event"], self.rdd_entry)
+        self.raw_events = map(lambda x: x["event"], self.pvalue_entry)
         self.ip_ldp = iptables_ldp.IptablesLDP("fake_id",
                                                {"module": "fake_config"})
 
@@ -52,14 +52,14 @@ class TestIptablesLDP(MonanasTestCase):
     def test_detect_anomalies_no_features(self):
         self.clf = classifier_mock.MockClassifier(False)
         self.ip_ldp.set_voter_output(self.clf)
-        ret = self.ip_ldp._detect_anomalies(self.rdd_entry,
+        ret = self.ip_ldp._detect_anomalies(self.pvalue_entry,
                                             self.ip_ldp._data)
         self.assertEqual(self.raw_events, ret)
 
     def test_detect_anomalies_no_classifier(self):
         self.clf = classifier_mock.MockClassifier(False)
         self.ip_ldp.set_feature_list(["ssh", "ip", "http", "ping"])
-        ret = self.ip_ldp._detect_anomalies(self.rdd_entry,
+        ret = self.ip_ldp._detect_anomalies(self.pvalue_entry,
                                             self.ip_ldp._data)
         self.assertEqual(self.raw_events, ret)
 
@@ -67,7 +67,7 @@ class TestIptablesLDP(MonanasTestCase):
         self.clf = classifier_mock.MockClassifier(False)
         self.ip_ldp.set_feature_list(["ssh", "ip", "http", "ping"])
         self.ip_ldp.set_voter_output(self.clf)
-        ret = self.ip_ldp._detect_anomalies(self.rdd_entry,
+        ret = self.ip_ldp._detect_anomalies(self.pvalue_entry,
                                             self.ip_ldp._data)
         self.assert_anomalous_events(ret, False)
 
@@ -75,6 +75,6 @@ class TestIptablesLDP(MonanasTestCase):
         self.clf = classifier_mock.MockClassifier(True)
         self.ip_ldp.set_feature_list(["ssh", "ip", "http", "ping"])
         self.ip_ldp.set_voter_output(self.clf)
-        ret = self.ip_ldp._detect_anomalies(self.rdd_entry,
+        ret = self.ip_ldp._detect_anomalies(self.pvalue_entry,
                                             self.ip_ldp._data)
         self.assert_anomalous_events(ret, True)

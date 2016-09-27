@@ -165,34 +165,34 @@ def get_available_classes(class_type=None):
     if not class_type or class_type == const.SOURCES:
         from monasca_analytics.source.base import BaseSource
         _classes[
-            const.SOURCES] = get_available_inherited_classes_recursively(
+            const.SOURCES] = get_available_inherited_classes(
             source, BaseSource)
     if not class_type or class_type == const.INGESTORS:
         from monasca_analytics.ingestor.base import BaseIngestor
         _classes[const.INGESTORS] = \
-            get_available_inherited_classes_recursively(ingestor, BaseIngestor)
+            get_available_inherited_classes(ingestor, BaseIngestor)
 
     if not class_type or class_type == const.SMLS:
         from monasca_analytics.sml.base import BaseSML
         _classes[
-            const.SMLS] = get_available_inherited_classes_recursively(
+            const.SMLS] = get_available_inherited_classes(
             sml, BaseSML)
 
     if not class_type or class_type == const.VOTERS:
         from monasca_analytics.voter.base import BaseVoter
         _classes[
-            const.VOTERS] = get_available_inherited_classes_recursively(
+            const.VOTERS] = get_available_inherited_classes(
             voter, BaseVoter)
     if not class_type or class_type == const.SINKS:
         from monasca_analytics.sink.base import BaseSink
         _classes[
-            const.SINKS] = get_available_inherited_classes_recursively(
+            const.SINKS] = get_available_inherited_classes(
             sink, BaseSink)
 
     if not class_type or class_type == const.LDPS:
         from monasca_analytics.ldp.base import BaseLDP
         _classes[const.LDPS] = \
-            get_available_inherited_classes_recursively(ldp, BaseLDP)
+            get_available_inherited_classes(ldp, BaseLDP)
 
     return _classes
 

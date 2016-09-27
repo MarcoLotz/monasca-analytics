@@ -26,7 +26,6 @@ from monasca_analytics.voter import pick_index
 from test import util
 from test.util import inheritance as inh
 
-
 class CommonUtilTest(unittest.TestCase):
 
     def test_parse_json_file(self):
